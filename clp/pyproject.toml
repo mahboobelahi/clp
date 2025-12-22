@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clp-tri-objective"
+version = "0.1.0"
+description = "Tri-objective Container Loading Problem with ULO and CG balance"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Mahboob Elahi" }]
+
+dependencies = [
+    "numpy==2.2.6",
+    "matplotlib>=3.10.8",
+    "pandas==2.3.3",
+    "vedo==2025.5.4",
+    "jupyterlab==4.5.1",
+    "requests==2.32.5",
+    "tqdm==4.66.4",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["clp*"]
