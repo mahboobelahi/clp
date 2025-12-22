@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Outputs
+results/*
+!results/README.md
+!results/run_index.json
+
+# OS/editor
+.DS_Store
+.vscode/
