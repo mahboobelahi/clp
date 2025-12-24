@@ -1,0 +1,11 @@
+[
+  {
+    "dataset_family": "BR-Modified",
+    "instance_id": "BR7_003",
+    "path": "results/BR-Modified/BR7_003/run_20251223_125259.223214_seed7_dblf_balance.json",
+    "run_id": "20251223_125259.223214_seed7_dblf_balance",
+    "seed": 7,
+    "timestamp_utc": "2025-12-23T12:52:59.223214Z",
+    "variant": "dblf_balance"
+  }
+]
