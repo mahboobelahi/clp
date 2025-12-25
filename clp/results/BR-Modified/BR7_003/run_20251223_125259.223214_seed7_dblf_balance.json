@@ -1,0 +1,432 @@
+{
+  "algorithm": {
+    "decoder": "dblf_balance",
+    "name": "NSGA-II",
+    "params": {
+      "crossover_p": 0.8,
+      "generations": 10,
+      "pm1": 0.6,
+      "pm2": 0.3,
+      "pop_size": 50
+    },
+    "seed": 7,
+    "variant": "dblf_balance"
+  },
+  "dataset": {
+    "family": "BR-Modified",
+    "instance_id": "BR7_003",
+    "modification_protocol": {
+      "customer_assignment": null,
+      "enabled": true,
+      "fragile_assignment": null,
+      "fragile_ratio": null,
+      "n_customers": null,
+      "notes": "",
+      "orientation_rules": null,
+      "seed": 7,
+      "weight_limit": {
+        "Qmax": null,
+        "enabled": null,
+        "note": ""
+      },
+      "weights": null
+    },
+    "source": "Bischoff-Ratcliff"
+  },
+  "meta": {
+    "container": {
+      "H": 2.39,
+      "L": 12.0,
+      "W": 2.35
+    },
+    "notes": ""
+  },
+  "objectives": {
+    "Z1": {
+      "name": "volume_utilization",
+      "sense": "max"
+    },
+    "Z2": {
+      "name": "unloading_obstacles",
+      "sense": "min"
+    },
+    "Z3": {
+      "name": "cg_deviation_avg_axes",
+      "sense": "min"
+    }
+  },
+  "pareto_front": [
+    {
+      "cg": {
+        "deviation_pct_halfspan": {
+          "x": 1.639,
+          "y": 2.068,
+          "z": 0.929
+        },
+        "target": {
+          "x": 0.5,
+          "y": 0.5,
+          "z": 0.5
+        }
+      },
+      "diagnostics": {
+        "feasible": true,
+        "notes": "dummy",
+        "ulo_count": 10,
+        "ulo_pairs_sample": [
+          [
+            "i12",
+            "i44"
+          ]
+        ]
+      },
+      "layout": {
+        "boxes": [
+          {
+            "customer": 2,
+            "fragile": 0,
+            "h": 0.6,
+            "id": "i12",
+            "l": 1.2,
+            "w": 0.8,
+            "weight": 40.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        ],
+        "container": {
+          "H": 2.39,
+          "L": 12.0,
+          "W": 2.35
+        }
+      },
+      "objectives": {
+        "Z1": 0.701664,
+        "Z2": 10,
+        "Z3": 0.024016
+      },
+      "solution_id": "p0000"
+    },
+    {
+      "cg": {
+        "deviation_pct_halfspan": {
+          "x": 1.993,
+          "y": 2.341,
+          "z": 0.914
+        },
+        "target": {
+          "x": 0.5,
+          "y": 0.5,
+          "z": 0.5
+        }
+      },
+      "diagnostics": {
+        "feasible": true,
+        "notes": "dummy",
+        "ulo_count": 9,
+        "ulo_pairs_sample": [
+          [
+            "i12",
+            "i44"
+          ]
+        ]
+      },
+      "layout": {
+        "boxes": [
+          {
+            "customer": 2,
+            "fragile": 0,
+            "h": 0.6,
+            "id": "i12",
+            "l": 1.2,
+            "w": 0.8,
+            "weight": 40.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        ],
+        "container": {
+          "H": 2.39,
+          "L": 12.0,
+          "W": 2.35
+        }
+      },
+      "objectives": {
+        "Z1": 0.725502,
+        "Z2": 9,
+        "Z3": 0.027064
+      },
+      "solution_id": "p0001"
+    },
+    {
+      "cg": {
+        "deviation_pct_halfspan": {
+          "x": 1.576,
+          "y": 2.329,
+          "z": 0.804
+        },
+        "target": {
+          "x": 0.5,
+          "y": 0.5,
+          "z": 0.5
+        }
+      },
+      "diagnostics": {
+        "feasible": true,
+        "notes": "dummy",
+        "ulo_count": 8,
+        "ulo_pairs_sample": [
+          [
+            "i12",
+            "i44"
+          ]
+        ]
+      },
+      "layout": {
+        "boxes": [
+          {
+            "customer": 2,
+            "fragile": 0,
+            "h": 0.6,
+            "id": "i12",
+            "l": 1.2,
+            "w": 0.8,
+            "weight": 40.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        ],
+        "container": {
+          "H": 2.39,
+          "L": 12.0,
+          "W": 2.35
+        }
+      },
+      "objectives": {
+        "Z1": 0.742308,
+        "Z2": 8,
+        "Z3": 0.02083
+      },
+      "solution_id": "p0002"
+    }
+  ],
+  "progress": {
+    "per_generation": [
+      {
+        "Z1": {
+          "avg": 0.45173,
+          "max": 0.503238,
+          "min": 0.36522
+        },
+        "Z2": {
+          "avg": 43.0,
+          "max": 49,
+          "min": 30
+        },
+        "Z3": {
+          "avg": 0.089849,
+          "max": 0.104923,
+          "min": 0.079269
+        },
+        "gen": 0,
+        "pop_size": 50
+      },
+      {
+        "Z1": {
+          "avg": 0.476038,
+          "max": 0.530375,
+          "min": 0.39534
+        },
+        "Z2": {
+          "avg": 41.0,
+          "max": 52,
+          "min": 28
+        },
+        "Z3": {
+          "avg": 0.091536,
+          "max": 0.111011,
+          "min": 0.075882
+        },
+        "gen": 1,
+        "pop_size": 50
+      },
+      {
+        "Z1": {
+          "avg": 0.510476,
+          "max": 0.566306,
+          "min": 0.429858
+        },
+        "Z2": {
+          "avg": 35.0,
+          "max": 40,
+          "min": 24
+        },
+        "Z3": {
+          "avg": 0.080513,
+          "max": 0.099098,
+          "min": 0.070047
+        },
+        "gen": 2,
+        "pop_size": 50
+      },
+      {
+        "Z1": {
+          "avg": 0.541454,
+          "max": 0.592896,
+          "min": 0.460276
+        },
+        "Z2": {
+          "avg": 36.0,
+          "max": 51,
+          "min": 23
+        },
+        "Z3": {
+          "avg": 0.083455,
+          "max": 0.099844,
+          "min": 0.067639
+        },
+        "gen": 3,
+        "pop_size": 50
+      },
+      {
+        "Z1": {
+          "avg": 0.568247,
+          "max": 0.623724,
+          "min": 0.487619
+        },
+        "Z2": {
+          "avg": 36.0,
+          "max": 44,
+          "min": 22
+        },
+        "Z3": {
+          "avg": 0.078324,
+          "max": 0.096097,
+          "min": 0.063007
+        },
+        "gen": 4,
+        "pop_size": 50
+      },
+      {
+        "Z1": {
+          "avg": 0.595422,
+          "max": 0.654656,
+          "min": 0.511806
+        },
+        "Z2": {
+          "avg": 27.0,
+          "max": 35,
+          "min": 20
+        },
+        "Z3": {
+          "avg": 0.072839,
+          "max": 0.08779,
+          "min": 0.059836
+        },
+        "gen": 5,
+        "pop_size": 50
+      },
+      {
+        "Z1": {
+          "avg": 0.628946,
+          "max": 0.683435,
+          "min": 0.542857
+        },
+        "Z2": {
+          "avg": 24.0,
+          "max": 37,
+          "min": 18
+        },
+        "Z3": {
+          "avg": 0.072735,
+          "max": 0.084255,
+          "min": 0.055164
+        },
+        "gen": 6,
+        "pop_size": 50
+      },
+      {
+        "Z1": {
+          "avg": 0.664498,
+          "max": 0.71489,
+          "min": 0.577815
+        },
+        "Z2": {
+          "avg": 28.0,
+          "max": 38,
+          "min": 14
+        },
+        "Z3": {
+          "avg": 0.064822,
+          "max": 0.079788,
+          "min": 0.05132
+        },
+        "gen": 7,
+        "pop_size": 50
+      },
+      {
+        "Z1": {
+          "avg": 0.697281,
+          "max": 0.747969,
+          "min": 0.616345
+        },
+        "Z2": {
+          "avg": 25.0,
+          "max": 40,
+          "min": 13
+        },
+        "Z3": {
+          "avg": 0.065182,
+          "max": 0.078278,
+          "min": 0.04787
+        },
+        "gen": 8,
+        "pop_size": 50
+      },
+      {
+        "Z1": {
+          "avg": 0.718967,
+          "max": 0.775779,
+          "min": 0.634511
+        },
+        "Z2": {
+          "avg": 21.0,
+          "max": 36,
+          "min": 10
+        },
+        "Z3": {
+          "avg": 0.062712,
+          "max": 0.076267,
+          "min": 0.043306
+        },
+        "gen": 9,
+        "pop_size": 50
+      },
+      {
+        "Z1": {
+          "avg": 0.751172,
+          "max": 0.806109,
+          "min": 0.66899
+        },
+        "Z2": {
+          "avg": 16.0,
+          "max": 24,
+          "min": 9
+        },
+        "Z3": {
+          "avg": 0.058372,
+          "max": 0.073337,
+          "min": 0.039204
+        },
+        "gen": 10,
+        "pop_size": 50
+      }
+    ]
+  },
+  "run_id": "20251223_125259.223214_seed7_dblf_balance",
+  "schema_version": "1.0",
+  "timestamp_utc": "2025-12-23T12:52:59.223214Z"
+}

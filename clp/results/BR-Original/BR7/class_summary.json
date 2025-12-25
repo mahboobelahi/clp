@@ -1,0 +1,10 @@
+{
+  "br_class": "BR7",
+  "container": {
+    "H": 220,
+    "L": 589,
+    "W": 233
+  },
+  "elapsed_sec_total": 56.495454,
+  "timestamp_note": "wall time for both modes and 100 cases"
+}
