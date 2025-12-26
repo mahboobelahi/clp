@@ -1,14 +1,28 @@
+
+.gitignore
 # Python
 __pycache__/
 *.pyc
-.venv/
-.env
+.vscode/
+clp/.vscode/
+env/
 
 # Outputs
-results/*
+results/clp_tri_objective/
 !results/README.md
 !results/run_index.json
 
 # OS/editor
 .DS_Store
 .vscode/
+
+#other
+clp/results/clp_tri_objective.egg-info/
+clp/clp_tri_objective.egg-info/
+datasets/
+
+results/BR-Original1/BR*/
+results/BR-Original1/BR*/**
+
+results/BR-Original/BR*/
+results/BR-Original/BR*/**

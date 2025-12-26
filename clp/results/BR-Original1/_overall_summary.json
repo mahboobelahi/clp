@@ -19,7 +19,7 @@
   ],
   "cases_per_class": 100,
   "dataset_family": "BR-Original",
-  "elapsed_sec_total": 1079.531439,
+  "elapsed_sec_total": 983.449173,
   "modes": [
     "six_way",
     "C1_respect"
