@@ -9,8 +9,19 @@ from typing import Any, Dict, List, Optional, Tuple
 from openpyxl import Workbook
 
 # ---- CONFIG ----
-RESULTS_ROOT = Path(r"C:\Users\elahi\Desktop\clp\clp\results\BR-Original")
-OUT_DIR = RESULTS_ROOT / "_summary"
+# RESULTS_ROOT = Path(r"C:\Users\elahi\Desktop\clp\clp\results\BR-Original")
+WD_DIR = [
+    "BR-Original-baseline",
+    "BR-Original",
+    "BR-Original-two_phase",
+    "BR-Modified-NSGA2",
+]
+
+
+BASE_ROOT = Path(r"C:\Users\elahi\Desktop\clp\clp\results")
+RESULTS_ROOT = BASE_ROOT / WD_DIR[2]
+OUT_FILE_NAME = WD_DIR[2]
+OUT_DIR = RESULTS_ROOT  / WD_DIR[2] / "_summary"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 MODES = ["six_way", "C1_respect"]
@@ -220,9 +231,15 @@ def aggregate_results(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Flat (JSON + CSV)
-    flat_json = out_dir / "br_original_flat.json"
-    flat_csv = out_dir / "br_original_flat.csv"
-    flat_xlsx = out_dir / "br_original_flat.xlsx"
+    flat_json = out_dir / f"{OUT_FILE_NAME}_flat.json"
+    flat_csv = out_dir / f"{OUT_FILE_NAME}_flat.csv"
+    flat_xlsx = out_dir / f"{OUT_FILE_NAME}_flat.xlsx"
+
+
+    # flat_json = out_dir / "br_original_flat.json"
+    # flat_csv = out_dir /"br_original_flat.csv"
+    # flat_xlsx = out_dir /"br_original_flat.xlsx"
+
     write_json(flat_json, flat_rows)
 
     flat_fields = [
@@ -238,10 +255,14 @@ def aggregate_results(
     write_xlsx(flat_xlsx, flat_rows, sheet_name="flat")
 
     # Summary (JSON + CSV)
-    summary_json = out_dir / "br_original_summary.json"
-    summary_csv = out_dir / "br_original_summary.csv"
-    summary_xlsx = out_dir / "br_original_summary.xlsx"
-    
+    summary_json = out_dir / f"{OUT_FILE_NAME}_summary.json"
+    summary_csv = out_dir / f"{OUT_FILE_NAME}_summary.csv"
+    summary_xlsx = out_dir / f"{OUT_FILE_NAME}_summary.xlsx"
+
+
+    # summary_json = out_dir /"br_original_summary.json"
+    # summary_csv = out_dir /"br_original_summary.csv"
+    # summary_xlsx = out_dir /"br_original_summary.xlsx"
     write_json(summary_json, summary_rows)
 
     summary_fields = [
