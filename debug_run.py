@@ -2,23 +2,32 @@
 from pathlib import Path
 from pprint import pprint
 from clp.clp.data.br_original import load_br_instance
+from clp.clp.models.geometry import ( AABB, Dims,is_supported)
 from clp.clp.decoders.dblf import decode_dblf
+from clp.clp.decoders.two_phase import decode_two_phase
 from clp.clp.eval.cg import compute_cg_metrics
 from clp.clp.models.items import br_row_to_item_type, expand_demands
-from clp.clp.polices.rotation import RotationMode  # adjust path
-from clp.clp.models.geometry import AABB
-from clp.clp.models.items import Dims
+from clp.clp.polices.rotation import RotationMode  
+# from clp.clp.models.geometry import AABB
+# from clp.clp.models.items import Dims
 from clp.clp.viz.debug_viz import plot_container_debug
 from clp.clp.results.schema import run_skeleton
 from clp.clp.results.writer import write_run
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from time import perf_counter
-from random import randint,seed
+from random import seed
 from clp.scripts.aggregate_results import aggregate_results
 
 seed
 container = Dims(589, 233, 220)
 min_ratio: float = 0.8
+WD_DIR = [
+    "BR-Original-baseline",
+    "BR-Original",
+    "BR-Original-two_phase",
+    "BR-Modified-NSGA2",
+]
+BASE_RESULTS = Path(r"C:\Users\elahi\Desktop\clp\clp\results")
 
 def volume_utilization(placed: List[AABB], container: Dims) -> float:
     vol_loaded = sum(b.dims.L * b.dims.W * b.dims.H for b in placed)
@@ -48,13 +57,31 @@ def run_one_instance(
     instances = expand_demands(item_types)
 
     t0 = perf_counter()
-    placed, unplaced = decode_dblf(
-        container=container,
-        item_types=item_types,
-        instances=instances,
-        rotation_mode=rotation_mode,
-         min_ratio = min_ratio
-    )
+    
+    #! base-line DBLF
+    # placed, unplaced = decode_dblf(
+    #     container=container,
+    #     item_types=item_types,
+    #     instances=instances,
+    #     rotation_mode=rotation_mode,
+    #      min_ratio = min_ratio
+    # )
+
+  #! modified base-line Two-phase DBLF+Balance aware
+    placed, unplaced = decode_two_phase(
+                container=container,
+                item_types=item_types,
+                instances=instances,
+                rotation_mode=RotationMode.SIX_WAY,
+                box_order_policy="volume_then_maxface",  # ✅ ranking
+                split_ratio=0.7,
+                support_required=True,
+                support_min_ratio=.80,
+                is_supported_fn=is_supported,
+            )
+
+
+
     elapsed = perf_counter() - t0
 
     cg = compute_cg_metrics(placed, container)
@@ -66,7 +93,7 @@ def run_one_instance(
     variant = "six_way" if rotation_mode == RotationMode.SIX_WAY else "C1_respect"
 
     run = run_skeleton(
-        dataset_family="BR-Original",
+        dataset_family=WD_DIR[1],
         instance_id=instance_id,
         variant=variant,
         seed=seed,
@@ -130,7 +157,8 @@ def main() -> None:
     dataset_root = Path("clp/datasets/br_original")  # your relative dataset root
 
     # Absolute results root (your requested Windows path)
-    results_root = Path(r"C:\Users\elahi\Desktop\clp\clp\results\BR-Original")
+    # results_root = Path(r"C:\Users\elahi\Desktop\clp\clp\results\BR-Original-two_phase-decoder")
+    results_root = BASE_RESULTS / WD_DIR[2]
 
     seed = 0  # keep deterministic unless you shuffle instances
 
