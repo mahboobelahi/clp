@@ -1,6 +1,6 @@
 # clp/clp/decoders/two_phase.py
 from __future__ import annotations
-
+from collections import defaultdict
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional, Set, Callable, Hashable
 from clp.clp.viz.debug_viz import plot_container_debug
@@ -562,7 +562,8 @@ def decode_two_phase(
         remaining_qty: int,
         ep_sort_key,
         phase: str,  # "A" or "B"
-        soft_rotation=soft_rotation) -> Optional[int]:
+        soft_rotation=soft_rotation,
+        support_min_ratio=support_min_ratio) -> Optional[int]:
         """
         Try to place one strict block for this group (type fixed, rotation chosen).
         Returns how many boxes were consumed, else None.
@@ -675,6 +676,8 @@ def decode_two_phase(
                 remaining_qty=remB[gk],
                 ep_sort_key=rev_dblf_key,
                 phase="B",
+                support_min_ratio=0.75,
+                soft_rotation=True
             )
             if used is None:
                 break
@@ -684,7 +687,8 @@ def decode_two_phase(
     # Leftovers ONLY after block phase ends (your requirement)
     # ============================================================
     leftovers: List = []
-    
+
+    # Build leftovers list from remaining counts in remA/remB
     for inst in phaseA_insts:
         gk = group_key_fn(inst)
         if remA.get(gk, 0) > 0:
@@ -696,35 +700,115 @@ def decode_two_phase(
         if remB.get(gk, 0) > 0:
             leftovers.append(inst)
             remB[gk] -= 1
-    
+
+    # Remaining qty per leftover group
     remL: Dict[GroupKey, int] = {}
     for inst in leftovers:
         gk = group_key_fn(inst)
         remL[gk] = remL.get(gk, 0) + 1
 
+    # Stable group order for leftovers
     group_seq_L = _group_sequence(leftovers, group_key_fn)
 
+    # ============================================================
+    # Try placing leftovers in block-mode
+    # ============================================================
     for gk in group_seq_L:
+        remaining = remL.get(gk, 0)
+        if remaining <= 0:
+            continue
+
         tid = int(gk[-1])
+
         while remL.get(gk, 0) > 0:
             used = place_best_block_for_group(
                 group_key=gk,
                 type_id=tid,
                 remaining_qty=remL[gk],
-                ep_sort_key=rev_dblf_key,
+                ep_sort_key=dblf_key,
                 phase="A",
                 soft_rotation=True,
+                support_min_ratio=0.7,
             )
-            if used is None:
+            if used is None or used <= 0:
                 break
+
             remL[gk] -= used
+
+    # ============================================================
+    # Reconstruct unplaced instances from what remains in remL
+    # ============================================================
+    group_to_insts: Dict[GroupKey, List] = defaultdict(list)
+    for inst in leftovers:
+        group_to_insts[group_key_fn(inst)].append(inst)
+
+    unplaced_L: List = []
+    for gk, insts in group_to_insts.items():
+        rem = remL.get(gk, 0)
+        if rem > 0:
+            # take any rem instances (deterministic: keep original order)
+            unplaced_L.extend(insts[-rem:])
+    
+    
+    
+    
+    
+    # # ============================================================
+    # # Leftovers ONLY after block phase ends (your requirement)
+    # # ============================================================
+    # leftovers: List = []
+    
+    # for inst in phaseA_insts:
+    #     gk = group_key_fn(inst)
+    #     if remA.get(gk, 0) > 0:
+    #         leftovers.append(inst)
+    #         remA[gk] -= 1
+
+    # for inst in phaseB_insts:
+    #     gk = group_key_fn(inst)
+    #     if remB.get(gk, 0) > 0:
+    #         leftovers.append(inst)
+    #         remB[gk] -= 1
+    
+    # remL: Dict[GroupKey, int] = {}
+    # for inst in leftovers:
+    #     gk = group_key_fn(inst)
+    #     remL[gk] = remL.get(gk, 0) + 1
+
+    # group_seq_L = _group_sequence(leftovers, group_key_fn)
+
+    # for gk in group_seq_L:
+    #     tid = int(gk[-1])
+    #     while remL.get(gk, 0) > 0:
+    #         used = place_best_block_for_group(
+    #             group_key=gk,
+    #             type_id=tid,
+    #             remaining_qty=remL[gk],
+    #             ep_sort_key=dblf_key,
+    #             phase="A",
+    #             soft_rotation=True,
+    #             support_min_ratio=0.7
+    #         )
+    #         if used is None:
+    #             break
+    #         remL[gk] -= used
     
 
 
     # ============================================================
     # Single-box placement for leftovers (same two-phase idea)
     # ============================================================
-    # def place_one_single(inst, ep_sort_key, phase: str) -> bool:
+    
+    # if PLOT_PARTIAL_LAYOUT:
+    # plot_container_debug(
+    #         placed=placed,
+    #         eps= eps,
+    #         container_dims=(container.L, container.W, container.H),
+    #         title="NSGA-II Type1 Decoded Layout",
+    #         show_box_labels=True,
+    #     )
+
+    # def place_one_single(inst, ep_sort_key, phase: str, support_min_ratio: float = 0.6) -> bool:
     #     nonlocal eps, placed, mstate
 
     #     gk = group_key_fn(inst)
@@ -734,6 +818,7 @@ def decode_two_phase(
     #         rots_by_type=rots_by_type,
     #         rot_by_group=rot_by_group,
     #         soft_rotation=True,#soft_rotation,
+            
     #     )
     #     if not rot_dims_list:
     #         return False
@@ -758,19 +843,22 @@ def decode_two_phase(
     #                 if not is_supported_fn(cand, placed, support_min_ratio):
     #                     continue
 
-    #             if phase == "A":
-    #                 sc = gap_score(cand, placed, container, tol=gap_tol)
-    #             else:
-    #                 md = mstate.score_with_box(cand, mass_fn(cand))
-    #                 sc = -md
+    #             # if phase == "A":
+    #             #     sc = gap_score(cand, placed, container, tol=gap_tol)
+    #             # else:
+    #             #     md = mstate.score_with_box(cand, mass_fn(cand))
+    #             #     sc = -md
 
-    #             if (best is None) or (sc > best[0]):
-    #                 best = (sc, ep, cand)
+    #             # if (best is None) or (sc > best[0]):
+    #             #     best = (sc, ep, cand)
+    #             best = (0, ep, cand)
+    #             break
 
     #     if best is None:
     #         return False
+    #     if best is not None:
+    #         _, best_ep, best_cand = best
 
-    #     _, best_ep, best_cand = best
     #     placed.append(best_cand)
     #     mstate.commit_box(best_cand, mass_fn(best_cand))
 
@@ -783,6 +871,14 @@ def decode_two_phase(
 
     # for inst in leftA:
     #     ok = place_one_single(inst, dblf_key, phase="A")
+    #     if ok:
+    #         plot_container_debug(
+    #         placed=placed,
+    #         eps= eps,
+    #         container_dims=(container.L, container.W, container.H),
+    #         title="NSGA-II Type1 Decoded Layout",
+    #         show_box_labels=True,
+    #     )
     #     if not ok:
     #         unplaced.append(inst)
 
@@ -792,16 +888,17 @@ def decode_two_phase(
     #         unplaced.append(inst)
     # for inst in leftovers:
     #     ok = place_one_single(inst, rev_dblf_key, phase="B")
+    #     if ok:
+    #         plot_container_debug(
+    #         placed=placed,
+    #         eps= eps,
+    #         container_dims=(container.L, container.W, container.H),
+    #         title="NSGA-II Type1 Decoded Layout",
+    #         show_box_labels=True,
+    #     )
     #     if not ok:
     #         unplaced.append(inst)
 
-    if PLOT_PARTIAL_LAYOUT:
-        plot_container_debug(
-                placed=placed,
-                eps= eps,
-                container_dims=(container.L, container.W, container.H),
-                title="NSGA-II Type1 Decoded Layout",
-                show_box_labels=True,
-            )
 
-    return placed, []#unplaced
+
+    return placed, unplaced_L

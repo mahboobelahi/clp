@@ -18,7 +18,7 @@ from clp.clp.ga.population import (
     expand_chromosome,
     GroupChromosome,
 )
-from clp.configurations import PLOT_POP_EVALUATION, debug, is_ULO
+from clp.configurations import PLOT_POP_EVALUATION, debug, is_ULO, BOX_ORDER_POLICY
 
 # ============================================================
 # Evaluated individual record (keeps EVERYTHING needed for JSON)
@@ -286,7 +286,7 @@ def mutate_rot_map_two_step(
 # ============================================================
 # Evaluation (decoder-driven, returns full artifacts)
 # ============================================================
-BOX_ORDER_POLICY = "volume_then_maxface"
+
 def evaluate_chromosome(
     *,
     chrom: GroupChromosome,
@@ -362,7 +362,7 @@ def evaluate_chromosome(
         elapsed_sec=float(elapsed),
     )
 
-    print(f" Evaluated: {res}")
+    # print(f" Evaluated: {res}")
     return res
 
 # ============================================================

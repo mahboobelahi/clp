@@ -20,7 +20,8 @@ from clp.clp.ga.nsga2 import run_nsga2_type1
 from clp.configurations import(is_ULO, RESULTS_DIR_NAME, DECODER_KIND, BOX_ORDER_POLICY,
                                 SPLIT_RATIO, SUPPORT_REQUIRED, SUPPORT_MIN_RATIO,
                                 GA_TEST, GA_EVOLVE, POP_SIZE, GENERATIONS,
-                                ENABLE_TEST_CLASS, ENABLE_TEST_CASE,SOFT_ROTATION)
+                                ENABLE_TEST_CLASS, ENABLE_TEST_CASE,SOFT_ROTATION,
+                                ROTATION_MODE_SETTING)
 
 # =============================================================================
 # EXPERIMENT CONFIG
@@ -376,7 +377,7 @@ def main() -> None:
     container = Dims(589, 233, 220)
 
     BR_DATA = ["br_original", "br_modified_beta_2_2", "br_modified_beta_2_5", "br_modified_beta_5_2"]
-    dataset_root = Path(f"clp/datasets/{BR_DATA[2]}")  # Type1 uses original BR
+    dataset_root = Path(f"clp/datasets/{BR_DATA[1]}")  # Type1 uses original BR
 
     results_root = BASE_RESULTS / RESULTS_DIR_NAME
     results_root.mkdir(parents=True, exist_ok=True)
@@ -386,10 +387,25 @@ def main() -> None:
 
     br_classes = [f"BR{i}" for i in range(16)]
     case_ids = list(range(1, 101))
-    modes = [
-        # ("six_way", RotationMode.SIX_WAY),
-        ("C1_respect", RotationMode.RESPECT_C1),
-    ]
+
+    if ROTATION_MODE_SETTING == "six":
+        modes = [
+            ("six_way", RotationMode.SIX_WAY),
+        ]
+
+    elif ROTATION_MODE_SETTING == "c1":
+        modes = [
+            ("C1_respect", RotationMode.RESPECT_C1),
+        ]
+
+    elif ROTATION_MODE_SETTING == "both":
+        modes = [
+            ("six_way", RotationMode.SIX_WAY),
+            ("C1_respect", RotationMode.RESPECT_C1),
+        ]
+
+    else:
+        raise ValueError(f"Unknown ROTATION_MODE_SETTING={ROTATION_MODE_SETTING!r}")
 
     overall_t0 = perf_counter()
 
@@ -399,7 +415,7 @@ def main() -> None:
 
         for mode_name, mode in modes:
             for case_id in case_ids:
-                if case_id ==5:break
+                # if case_id ==5:break
                 run = run_one_instance(
                     dataset_root=dataset_root,
                     br_class=br_class,
@@ -442,6 +458,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-  main()
+  # main()
   from clp.scripts.aggregate_results import aggregate_results
   aggregate_results()
