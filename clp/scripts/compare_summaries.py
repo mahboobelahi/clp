@@ -16,13 +16,13 @@ METRIC_SPECS = [
     ("mean_RDz", "std_RDz", "RDz", "RDz deviation (%)", 1.0),
     ("mean_time_sec", "std_time_sec", "Time", "Mean elapsed time per instance (s)", 1.0),
 ]
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[1]#"BR-Original"
 
 FILE_BASELINE = ROOT / "results" / "BR-Original" / "_summary" / "br_original_summary.xlsx"
 FILE_TWO_PHASE = ROOT / "results" / "BR-Original-two_phase" / "_summary" / "BR-Original-two_phase_summary.xlsx"
 
-ALGO_BASELINE = "Baseline-DBLF"
-ALGO_TWO_PHASE = "Two-Phase-DBLF"
+ALGO_BASELINE = "DBLF"
+ALGO_TWO_PHASE = "Ballance-Aware-DBLF"
 
 OUT_DIR = ROOT / "results" / "_comparison_plots"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -165,14 +165,14 @@ def plot_mode(df: pd.DataFrame, mode: str) -> None:
     )
 
     fig.suptitle(
-        f"BR-Original comparison (mode = {mode})",
+        f"BR-Modified comparison (mode = {mode})",
         fontsize=SUPTITLE_FONT_SIZE,
         y=0.99,
     )
     plt.tight_layout(rect=[0, 0, 1, 0.93])
 
     out = OUT_DIR / f"compare_BR_original_{mode}.png"
-    fig.savefig(out, dpi=1200)
+    fig.savefig(out, dpi=300)
     plt.close(fig)
     print("Saved:", out)
 
@@ -181,7 +181,7 @@ def main():
     df_base = load_summary(FILE_BASELINE, ALGO_BASELINE)
     df_two = load_summary(FILE_TWO_PHASE, ALGO_TWO_PHASE)
     df = pd.concat([df_base, df_two], ignore_index=True)
-
+    # df = pd.concat([df_base], ignore_index=True)
     print("\nSanity check (rows per algorithm/mode):")
     print(df.groupby(["algorithm", "mode"]).size())
 

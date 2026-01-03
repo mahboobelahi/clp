@@ -16,6 +16,7 @@ class Point:
 class AABB:
     origin: Point   # lower-back-left corner
     dims: Dims      # Dims(L, W, H)
+    type_id: int # item type
 
     def __repr__(self) -> str:
         x0, y0, z0 = self.origin.x, self.origin.y, self.origin.z

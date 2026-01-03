@@ -51,7 +51,7 @@ def plot_container_debug(
     title: str = "CLP Debug View",
     show_box_labels: bool = True,
     show_ep_labels: bool = False,
-    ep_radius: float = 1,
+    ep_radius: float = 4,
 ):
     """
     Visualizes:
@@ -81,7 +81,7 @@ def plot_container_debug(
 
     # ---- Draw placed objects ----
     for idx, obj in enumerate(placed):
-        color = palette[idx % len(palette)]
+        color = palette[obj.type_id]
 
         # Case A: AABB-like
         if hasattr(obj, "origin") and hasattr(obj, "dims"):
@@ -130,7 +130,7 @@ def plot_container_debug(
             pos = _as_xyz(p)
             vp += Sphere(pos=pos, r=ep_radius + 1.0, c='lavender')
             if show_ep_labels:
-                vp += Text3D(f"X{i}", pos=(pos[0], pos[1], pos[2] + 3), s=2, c="gray")
+                vp += Text3D(f"X{i}", pos=(pos[0], pos[1], pos[2] + 3), s=10, c="gray")
 
     vp.show(interactive=True)
 

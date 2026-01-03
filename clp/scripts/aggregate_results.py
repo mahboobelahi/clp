@@ -14,14 +14,15 @@ WD_DIR = [
     "BR-Original-baseline",
     "BR-Original",
     "BR-Original-two_phase",
-    "BR-Modified-NSGA2",
+    "BR-Modified-NSGA2_bi",
+    "BR-Modified-NSGA2_tri",
 ]
 
 
 BASE_ROOT = Path(r"C:\Users\elahi\Desktop\clp\clp\results")
-RESULTS_ROOT = BASE_ROOT / WD_DIR[2]
-OUT_FILE_NAME = WD_DIR[2]
-OUT_DIR = RESULTS_ROOT  / WD_DIR[2] / "_summary"
+RESULTS_ROOT = BASE_ROOT / WD_DIR[3]
+OUT_FILE_NAME = WD_DIR[3]
+OUT_DIR = RESULTS_ROOT   / "_summary" #/ WD_DIR[3]
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 MODES = ["six_way", "C1_respect"]
@@ -69,8 +70,17 @@ def read_case(path: Path) -> Optional[Dict[str, Any]]:
             "timestamp_utc": _safe_get(data, ["timestamp_utc"], ""),
             "run_id": _safe_get(data, ["run_id"], ""),
         }
-    except Exception:
-        return None
+    except json.JSONDecodeError as e:
+        print(f"[read_case] Invalid JSON in {path}: {e}")
+    except KeyError as e:
+        print(f"[read_case] Missing key {e} in {path}")
+    except IndexError as e:
+        print(f"[read_case] Empty pareto_front in {path}")
+    except Exception as e:
+        print(f"[read_case] Unexpected error in {path}: {e}")
+        traceback.print_exc()
+    return None
+
 
 
 def write_json(path: Path, obj: Any) -> None:

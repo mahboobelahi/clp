@@ -1,0 +1,58 @@
+[
+  {
+    "dataset_family": "BR-Original",
+    "br_class": "BR1",
+    "mode": "C1_respect",
+    "case_id": 1,
+    "path": "C:\\Users\\elahi\\Desktop\\clp\\clp\\results\\BR-Modified-NSGA2_bi\\BR1\\C1_respect\\1.json",
+    "run_id": "20260103_124558.741592_seed0_C1_respect",
+    "timestamp_utc": "2026-01-03T12:45:58.741592Z",
+    "Z1": 0.856994,
+    "Z3": 8.4763,
+    "RDx": 4.7969,
+    "RDy": 5.3355,
+    "RDz": 4.6238
+  },
+  {
+    "dataset_family": "BR-Original",
+    "br_class": "BR1",
+    "mode": "C1_respect",
+    "case_id": 2,
+    "path": "C:\\Users\\elahi\\Desktop\\clp\\clp\\results\\BR-Modified-NSGA2_bi\\BR1\\C1_respect\\2.json",
+    "run_id": "20260103_124559.930633_seed0_C1_respect",
+    "timestamp_utc": "2026-01-03T12:45:59.930633Z",
+    "Z1": 0.910541,
+    "Z3": 5.2412,
+    "RDx": 2.4874,
+    "RDy": 0.5336,
+    "RDz": 7.0694
+  },
+  {
+    "dataset_family": "BR-Original",
+    "br_class": "BR1",
+    "mode": "C1_respect",
+    "case_id": 3,
+    "path": "C:\\Users\\elahi\\Desktop\\clp\\clp\\results\\BR-Modified-NSGA2_bi\\BR1\\C1_respect\\3.json",
+    "run_id": "20260103_124600.840621_seed0_C1_respect",
+    "timestamp_utc": "2026-01-03T12:46:00.840621Z",
+    "Z1": 0.758955,
+    "Z3": 11.032,
+    "RDx": 1.6225,
+    "RDy": 12.9515,
+    "RDz": 12.0268
+  },
+  {
+    "dataset_family": "BR-Original",
+    "br_class": "BR1",
+    "mode": "C1_respect",
+    "case_id": 4,
+    "path": "C:\\Users\\elahi\\Desktop\\clp\\clp\\results\\BR-Modified-NSGA2_bi\\BR1\\C1_respect\\4.json",
+    "run_id": "20260103_124601.683320_seed0_C1_respect",
+    "timestamp_utc": "2026-01-03T12:46:01.683320Z",
+    "Z1": 0.862464,
+    "Z3": 5.9869,
+    "RDx": 1.2561,
+    "RDy": 2.8968,
+    "RDz": 9.897
+  }
+]
