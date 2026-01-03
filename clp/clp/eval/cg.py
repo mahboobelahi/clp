@@ -95,23 +95,43 @@ def compute_cg_metrics(
     cg_z = sum_mz / total_m
 
     # absolute deviations (distance units)
-    dev_x = abs(cg_x - xc)
-    dev_y = abs(cg_y - yc)
-    dev_z = abs(cg_z - zc)
+    dev_x = round(abs(cg_x - xc), 4)
+    dev_y = round(abs(cg_y - yc), 4)
+    dev_z = round(abs(cg_z - zc), 4)
 
-    # Z3 objective per your MIP: average of deviations across {x,y,z}
-    z3 = (dev_x + dev_y + dev_z) / 3.0
+    # Z3 objective per MIP: average of deviations across {x,y,z}
+    z3 = round((dev_x + dev_y + dev_z) / 3.0, 4)
 
     # RD% (moment normalized)
-    rd_x = (abs(moment_x) / (total_m * (container.L / 2.0))) * 100.0 if container.L > 0 else 0.0
-    rd_y = (abs(moment_y) / (total_m * (container.W / 2.0))) * 100.0 if container.W > 0 else 0.0
-    rd_z = (abs(moment_z) / (total_m * (container.H / 2.0))) * 100.0 if container.H > 0 else 0.0
+    rd_x = round(
+        (abs(moment_x) / (total_m * (container.L / 2.0))) * 100.0
+        if container.L > 0 else 0.0,
+        4
+    )
+    rd_y = round(
+        (abs(moment_y) / (total_m * (container.W / 2.0))) * 100.0
+        if container.W > 0 else 0.0,
+        4
+    )
+    rd_z = round(
+        (abs(moment_z) / (total_m * (container.H / 2.0))) * 100.0
+        if container.H > 0 else 0.0,
+        4
+    )
 
     return CGMetrics(
-        total_mass=total_m,
-        cg_x=cg_x, cg_y=cg_y, cg_z=cg_z,
-        container_cg_x=xc, container_cg_y=yc, container_cg_z=zc,
-        dev_x=dev_x, dev_y=dev_y, dev_z=dev_z,
+        total_mass=round(total_m, 4),
+        cg_x=round(cg_x, 4),
+        cg_y=round(cg_y, 4),
+        cg_z=round(cg_z, 4),
+        container_cg_x=round(xc, 4),
+        container_cg_y=round(yc, 4),
+        container_cg_z=round(zc, 4),
+        dev_x=dev_x,
+        dev_y=dev_y,
+        dev_z=dev_z,
         z3=z3,
-        rd_x_pct=rd_x, rd_y_pct=rd_y, rd_z_pct=rd_z,
+        rd_x_pct=rd_x,
+        rd_y_pct=rd_y,
+        rd_z_pct=rd_z,
     )
