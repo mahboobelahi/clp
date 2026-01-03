@@ -81,7 +81,11 @@ def plot_container_debug(
 
     # ---- Draw placed objects ----
     for idx, obj in enumerate(placed):
-        color = palette[obj.type_id]
+        tid = obj.type_id
+        if tid >= len(palette):
+            color = "black"
+        else:
+            color = palette[tid]
 
         # Case A: AABB-like
         if hasattr(obj, "origin") and hasattr(obj, "dims"):
