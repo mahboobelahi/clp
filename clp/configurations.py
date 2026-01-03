@@ -2,12 +2,13 @@
 # Decoder / Placement
 # ============================================================
 DECODER_KIND = "two_phase"          # "baseline" | "two_phase"
-BOX_ORDER_POLICY = None             # e.g. "volume_then_maxface" (non-GA only)
+BOX_ORDER_POLICY = None#"volume_then_maxface"            # e.g. "volume_then_maxface" (non-GA only)
 SPLIT_RATIO = 0.70
 
 SUPPORT_REQUIRED = True
-SUPPORT_MIN_RATIO = 0.70
+SUPPORT_MIN_RATIO = 0.80
 SOFT_ROTATION = False               # allow soft rotation in decoder
+ROTATION_MODE_SETTING = "both" #c1,six
 
 # ============================================================
 # Genetic Algorithm
@@ -15,10 +16,10 @@ SOFT_ROTATION = False               # allow soft rotation in decoder
 GA_TEST = False                     # evaluate Gen0 only
 GA_EVOLVE = True                    # full NSGA-II evolution
 
-POP_SIZE = 10
-GENERATIONS = 5
+POP_SIZE = 100
+GENERATIONS = 10
 
-is_ULO = True                       # enable Z2 (ULO objective)
+is_ULO = False#True                       # enable Z2 (ULO objective)
 
 # ============================================================
 # Dataset / Results
@@ -32,13 +33,13 @@ WD_DIR = [
 
 RESULTS_DIR_NAME = WD_DIR[2]        # default: BR-Modified-NSGA2_bi
 
-ENABLE_TEST_CLASS = True
+ENABLE_TEST_CLASS = True#False # True
 ENABLE_TEST_CASE = False
 
 # ============================================================
 # Debug / Visualization
 # ============================================================
-PLOT_PARTIAL_LAYOUT = True#False
+PLOT_PARTIAL_LAYOUT = False
 PLOT_POP_EVALUATION = False
 
 debug = False                       # verbose debug prints
