@@ -74,7 +74,7 @@ MAX_ROT_TRIES = 6       # cap rotation options tried per group
 # =============================================================================
 # GA PARAM TUNING (DOE)
 # =============================================================================
-GA_PARAM_TUNE = True#False   # <-- set True when you want to generate the DOE runs
+GA_PARAM_TUNE = False   # <-- set True when you want to generate the DOE runs
 
 # Full grid (ONE configuration per run)
 GA_GRID_CR  = [0.6, 0.7, 0.8]

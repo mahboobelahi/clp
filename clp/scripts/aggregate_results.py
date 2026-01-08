@@ -5,6 +5,7 @@ import csv
 import json
 from pathlib import Path
 from statistics import mean, median, stdev
+import traceback
 from typing import Any, Dict, List, Optional, Tuple
 from openpyxl import Workbook
 
