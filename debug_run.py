@@ -21,13 +21,14 @@ from clp.configurations import(is_ULO, RESULTS_DIR_NAME, DECODER_KIND, BOX_ORDER
                                 SPLIT_RATIO, SUPPORT_REQUIRED, SUPPORT_MIN_RATIO,
                                 GA_TEST, GA_EVOLVE, POP_SIZE, GENERATIONS,
                                 ENABLE_TEST_CLASS, ENABLE_TEST_CASE,SOFT_ROTATION,
-                                ROTATION_MODE_SETTING)
+                                ROTATION_MODE_SETTING, GA_PARAM_TUNE,ga_grid)
 
 # =============================================================================
 # EXPERIMENT CONFIG
 # =============================================================================
 
 BASE_RESULTS = Path(r"C:\Users\elahi\Desktop\clp\clp\results")
+BASE_RESULTS_GA_TUNE = Path(r"C:\Users\elahi\Desktop\clp\clp\results\ga_param_tuning")
 
 
 # =============================================================================
@@ -64,7 +65,27 @@ def pick_best_solution(solutions: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 # =============================================================================
-# Core: run one instance
+# Helpers (add these near your other helpers)
+# =============================================================================
+def _agg_stats(xs: List[float], ndigits: int = 6) -> Dict[str, float]:
+    if not xs:
+        return {"A": 0.0, "M1": 0.0, "M2": 0.0}
+    avg = sum(xs) / len(xs)
+    return {
+        "A": round(float(avg), ndigits),
+        "M1": round(float(max(xs)), ndigits),
+        "M2": round(float(min(xs)), ndigits),
+    }
+
+
+def select_cases_fixed(br_class: str, k: int, seed: int, case_ids: List[int]) -> List[int]:
+    # reproducible per class
+    rng = random.Random((seed + hash(br_class)) % 2_147_483_647)
+    return sorted(rng.sample(case_ids, k=k))
+
+
+# =============================================================================
+# Core: run one instance (PASTE-REPLACE THIS FUNCTION)
 # =============================================================================
 def run_one_instance(
     *,
@@ -74,6 +95,7 @@ def run_one_instance(
     container: Dims,
     rotation_mode: RotationMode,
     seed: int,
+    ga_cfg: Dict[str, Any] | None = None,   # NEW: optional GA overrides
 ) -> Dict[str, Any]:
     inst = load_br_instance(dataset_root, br_class, case_id)
     item_types = [br_row_to_item_type(r, i) for i, r in enumerate(inst.items)]
@@ -201,26 +223,35 @@ def run_one_instance(
                 "soft_rotation": bool(SOFT_ROTATION),
             }
 
-        # -------- FULL NSGA-II EVOLUTION --------
+        # -------- FULL NSGA-II EVOLUTION (single config per call) --------
         elif GA_EVOLVE:
+            ga_cfg = ga_cfg or {}
+            pop_k = int(ga_cfg.get("pop_size", POP_SIZE))
+            gen_k = int(ga_cfg.get("generations", GENERATIONS))
+            p_cx = float(ga_cfg.get("Cr", 0.8))
+            p_mut_seq = float(ga_cfg.get("pm1", 0.6))
+            p_mut_rot = float(ga_cfg.get("pm2", 0.3))
+
             res = run_nsga2_type1(
                 instances=instances,
                 item_types=item_types,
                 container=container,
                 rotation_mode=rotation_mode,
-                pop_size=POP_SIZE,
-                generations=GENERATIONS,
+                pop_size=pop_k,
+                generations=gen_k,
                 seed=seed,
                 split_ratio=SPLIT_RATIO,
                 support_required=SUPPORT_REQUIRED,
                 support_min_ratio=float(SUPPORT_MIN_RATIO),
-                is_supported_fn=is_supported,   # IMPORTANT
+                is_supported_fn=is_supported,
                 soft_rotation=SOFT_ROTATION,
+                p_cx=p_cx,
+                p_mut_seq=p_mut_seq,
+                p_mut_rot=p_mut_rot,
             )
-            front0 = res["front0"]          # List[EvalRec]
-            progress = res["progress"]      # per-gen summary dicts
+            front0 = res["front0"]
+            progress = res["progress"]
 
-            # Convert front0 to your schema solution dicts
             for idx, r in enumerate(front0):
                 cg_i = r.cg
                 solutions.append({
@@ -240,20 +271,24 @@ def run_one_instance(
                                     "placed_count": int(len(r.placed)),
                                     "unplaced_count": int(len(r.unplaced)),
                                     "notes": ""},
+                    "ga_cfg": {"Cr": p_cx, "pm1": p_mut_seq, "pm2": p_mut_rot, "pop_size": pop_k, "generations": gen_k},
                 })
 
             elapsed = perf_counter() - t0
             best_sol = pick_best_solution(solutions)
 
-            algo_name = "NSGA-II Type1 (Z1 max, Z3 min)"
+            algo_name = "NSGA-II Type1 (tri-objective eval)"
             algo_variant = f"{variant}_nsga2"
             algo_params = {
                 "decoder": "two_phase_blocks",
                 "rotation_mode": variant,
                 "ga_test": False,
                 "ga_evolve": True,
-                "generations": int(GENERATIONS),
-                "pop_size": int(POP_SIZE),
+                "generations": int(gen_k),
+                "pop_size": int(pop_k),
+                "Cr": float(p_cx),
+                "pm1": float(p_mut_seq),
+                "pm2": float(p_mut_rot),
                 "soft_rotation": bool(SOFT_ROTATION),
                 "split_ratio": float(SPLIT_RATIO),
                 "support_required": bool(SUPPORT_REQUIRED),
@@ -325,61 +360,39 @@ def run_one_instance(
     run["algorithm"]["decoder"] = algo_params.get("decoder", algo_name)
 
     run["pareto_front"] = solutions
-
-    # Progress logging for NSGA-II
     run["progress"]["per_generation"] = progress
 
-    # Meta summary uses BEST solution (even if pareto_front has many)
     run["meta"]["timing"] = {"elapsed_sec": round(float(elapsed), 6)}
     run["meta"]["counts"] = {
         "placed": int(best_sol["diagnostics"]["placed_count"]),
         "unplaced": int(best_sol["diagnostics"]["unplaced_count"]),
     }
     run["meta"]["cg_summary"] = {
-    "cg": [
-        best_sol["cg"]["loaded"]["x"],
-        best_sol["cg"]["loaded"]["y"],
-        best_sol["cg"]["loaded"]["z"],
-    ],
-    "dev": [
-        best_sol["cg"]["dev"]["x"],
-        best_sol["cg"]["dev"]["y"],
-        best_sol["cg"]["dev"]["z"],
-    ],
-    "rd_pct": [
-        best_sol["cg"]["rd_pct"]["x"],
-        best_sol["cg"]["rd_pct"]["y"],
-        best_sol["cg"]["rd_pct"]["z"],
-    ],
-    "z3": best_sol["cg"]["z3"],                 # CG penalty (your Z3)
-  }
+        "cg": [best_sol["cg"]["loaded"]["x"], best_sol["cg"]["loaded"]["y"], best_sol["cg"]["loaded"]["z"]],
+        "dev": [best_sol["cg"]["dev"]["x"], best_sol["cg"]["dev"]["y"], best_sol["cg"]["dev"]["z"]],
+        "rd_pct": [best_sol["cg"]["rd_pct"]["x"], best_sol["cg"]["rd_pct"]["y"], best_sol["cg"]["rd_pct"]["z"]],
+        "z3": best_sol["cg"]["z3"],
+    }
 
     if is_ULO:
-        run["meta"]["ulo"] = {
-            "implemented": True,
-            "count": best_sol["objectives"].get("Z2"),
-            "note": None,
-        }
+        run["meta"]["ulo"] = {"implemented": True, "count": best_sol["objectives"].get("Z2"), "note": None}
     else:
-        run["meta"]["ulo"] = {
-            "implemented": False,
-            "count": 0.0,
-            "note": "Z2 disabled for this run",
-        }
+        run["meta"]["ulo"] = {"implemented": False, "count": 0.0, "note": "Z2 disabled for this run"}
 
     return run
 
 
 # =============================================================================
-# Batch driver
+# Batch driver (PASTE-REPLACE THIS main())
 # =============================================================================
 def main() -> None:
     container = Dims(589, 233, 220)
 
     BR_DATA = ["br_original", "br_modified_beta_2_2", "br_modified_beta_2_5",
-                "br_modified_beta_5_2","br_modified_cust_beta_2_2", "br_modified_cust_beta_2_5",
-                "br_modified_cust_beta_5_2"]
-    dataset_root = Path(f"clp/datasets/{BR_DATA[1]}")  # Type1 uses original BR
+               "br_modified_beta_5_2", "br_modified_cust_beta_2_2", "br_modified_cust_beta_2_5",
+               "br_modified_cust_beta_5_2"]
+    
+    dataset_root = Path(f"clp/datasets/{BR_DATA[2]}")
 
     results_root = BASE_RESULTS / RESULTS_DIR_NAME
     results_root.mkdir(parents=True, exist_ok=True)
@@ -391,34 +404,90 @@ def main() -> None:
     case_ids = list(range(1, 101))
 
     if ROTATION_MODE_SETTING == "six":
-        modes = [
-            ("six_way", RotationMode.SIX_WAY),
-        ]
-
+        modes = [("six_way", RotationMode.SIX_WAY)]
     elif ROTATION_MODE_SETTING == "c1":
-        modes = [
-            ("C1_respect", RotationMode.RESPECT_C1),
-        ]
-
+        modes = [("C1_respect", RotationMode.RESPECT_C1)]
     elif ROTATION_MODE_SETTING == "both":
-        modes = [
-            ("six_way", RotationMode.SIX_WAY),
-            ("C1_respect", RotationMode.RESPECT_C1),
-        ]
-
+        modes = [("six_way", RotationMode.SIX_WAY), ("C1_respect", RotationMode.RESPECT_C1)]
     else:
         raise ValueError(f"Unknown ROTATION_MODE_SETTING={ROTATION_MODE_SETTING!r}")
 
+    # ============================================================
+    # GA PARAM TUNING MODE (1 JSON per config per class per mode)
+    # ============================================================
+    if GA_PARAM_TUNE:
+        tune_classes = ["BR1", "BR7", "BR15"]
+        tune_cases = {c: select_cases_fixed(c, k=5, seed=seed, case_ids=case_ids) for c in tune_classes}
+
+        BASE_RESULTS_GA_TUNE.mkdir(parents=True, exist_ok=True)
+
+        for mode_name, mode in modes:
+            for br_class in tune_classes:
+                cases_sel = tune_cases[br_class]
+
+                out_dir = BASE_RESULTS_GA_TUNE / br_class / mode_name
+                out_dir.mkdir(parents=True, exist_ok=True)
+
+                for cfg in ga_grid:
+                    z1s, z2s, z3s = [], [], []
+                    rdxs, rdys, rdzs = [], [], []
+
+                    for case_id in cases_sel:
+                        run = run_one_instance(
+                            dataset_root=dataset_root,
+                            br_class=br_class,
+                            case_id=case_id,
+                            container=container,
+                            rotation_mode=mode,
+                            seed=seed,
+                            ga_cfg=cfg,
+                        )
+                        best = pick_best_solution(run["pareto_front"])
+
+                        z1s.append(float(best["objectives"]["Z1"]))
+                        z2s.append(float(best["objectives"]["Z2"]))
+                        z3s.append(float(best["objectives"]["Z3"]))
+                        rdxs.append(float(best["cg"]["rd_pct"]["x"]))
+                        rdys.append(float(best["cg"]["rd_pct"]["y"]))
+                        rdzs.append(float(best["cg"]["rd_pct"]["z"]))
+
+                    summary = {
+                        "kind": "ga_param_tuning_summary",
+                        "br_class": br_class,
+                        "mode": mode_name,
+                        "seed": seed,
+                        "cases": cases_sel,
+                        "ga_cfg": cfg,
+                        "Z1": _agg_stats(z1s, ndigits=6),
+                        "Z2": _agg_stats(z2s, ndigits=6),
+                        "Z3": _agg_stats(z3s, ndigits=6),
+                        "rdx": _agg_stats(rdxs, ndigits=6),
+                        "rdy": _agg_stats(rdys, ndigits=6),
+                        "rdz": _agg_stats(rdzs, ndigits=6),
+                    }
+
+                    out_path = out_dir / (
+                        f"Cr{cfg['Cr']}_pm1{cfg['pm1']}_pm2{cfg['pm2']}"
+                        f"_N{cfg['pop_size']}_G{cfg['generations']}.json"
+                    )
+                    write_run(summary, out_path)
+                    print(f"🧪 TUNE {br_class} {mode_name} -> {out_path}")
+
+        print("✅ GA_PARAM_TUNE finished.")
+        return
+
+    # ============================================================
+    # NORMAL RUNS (your existing behavior)
+    # ============================================================
     overall_t0 = perf_counter()
 
     for br_class in br_classes:
-        if br_class in ["BR0"]:continue
+        if br_class in ["BR0"]:
+            continue
         class_t0 = perf_counter()
 
         for mode_name, mode in modes:
             for case_id in case_ids:
-                # if case_id in [1,2]:continue#break
-                # if case_id <=65:continue
                 run = run_one_instance(
                     dataset_root=dataset_root,
                     br_class=br_class,
@@ -433,9 +502,10 @@ def main() -> None:
                 out_path = out_dir / f"{case_id}.json"
                 write_run(run, out_path)
                 print(f"✅ {br_class} {mode_name} case {case_id:03d} -> {out_path}")
-                
-                #! break case_id loop for quick test
-                if ENABLE_TEST_CASE: break
+
+                if ENABLE_TEST_CASE:
+                    break
+
         class_elapsed = perf_counter() - class_t0
         summary_path = results_root / br_class / "class_summary.json"
         write_run({
@@ -444,8 +514,8 @@ def main() -> None:
             "elapsed_sec_total": round(class_elapsed, 6),
         }, summary_path)
 
-      #! break br_class loop for quick test
-        if ENABLE_TEST_CLASS: break
+        if ENABLE_TEST_CLASS:
+            break
 
     overall_elapsed = perf_counter() - overall_t0
     overall_summary_path = results_root / "_overall_summary.json"
@@ -461,6 +531,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-  # main()
+  main()
   from clp.scripts.aggregate_results import aggregate_results
   aggregate_results()
