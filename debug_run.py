@@ -458,12 +458,12 @@ def main() -> None:
                         "seed": seed,
                         "cases": cases_sel,
                         "ga_cfg": cfg,
-                        "Z1": _agg_stats(z1s, ndigits=6),
-                        "Z2": _agg_stats(z2s, ndigits=6),
-                        "Z3": _agg_stats(z3s, ndigits=6),
-                        "rdx": _agg_stats(rdxs, ndigits=6),
-                        "rdy": _agg_stats(rdys, ndigits=6),
-                        "rdz": _agg_stats(rdzs, ndigits=6),
+                        "Z1": _agg_stats(z1s, ndigits=4),
+                        "Z2": _agg_stats(z2s, ndigits=4),
+                        "Z3": _agg_stats(z3s, ndigits=4),
+                        "rdx": _agg_stats(rdxs, ndigits=4),
+                        "rdy": _agg_stats(rdys, ndigits=4),
+                        "rdz": _agg_stats(rdzs, ndigits=4),
                     }
 
                     out_path = out_dir / (
@@ -473,6 +473,9 @@ def main() -> None:
                     write_run(summary, out_path)
                     print(f"🧪 TUNE {br_class} {mode_name} -> {out_path}")
 
+        
+        from clp.scripts.aggregate_ga_param_tuning import aggregate_ga_param_tuning
+        aggregate_ga_param_tuning()
         print("✅ GA_PARAM_TUNE finished.")
         return
 
@@ -533,4 +536,5 @@ def main() -> None:
 if __name__ == "__main__":
   main()
   from clp.scripts.aggregate_results import aggregate_results
+
   aggregate_results()
