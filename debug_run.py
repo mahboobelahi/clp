@@ -376,7 +376,9 @@ def run_one_instance(
 def main() -> None:
     container = Dims(589, 233, 220)
 
-    BR_DATA = ["br_original", "br_modified_beta_2_2", "br_modified_beta_2_5", "br_modified_beta_5_2"]
+    BR_DATA = ["br_original", "br_modified_beta_2_2", "br_modified_beta_2_5",
+                "br_modified_beta_5_2","br_modified_cust_beta_2_2", "br_modified_cust_beta_2_5",
+                "br_modified_cust_beta_5_2"]
     dataset_root = Path(f"clp/datasets/{BR_DATA[1]}")  # Type1 uses original BR
 
     results_root = BASE_RESULTS / RESULTS_DIR_NAME
@@ -415,7 +417,8 @@ def main() -> None:
 
         for mode_name, mode in modes:
             for case_id in case_ids:
-                # if case_id ==5:break
+                # if case_id in [1,2]:continue#break
+                # if case_id <=65:continue
                 run = run_one_instance(
                     dataset_root=dataset_root,
                     br_class=br_class,
