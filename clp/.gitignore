@@ -20,7 +20,14 @@ results/clp_tri_objective/
 clp/results/clp_tri_objective.egg-info/
 clp/clp_tri_objective.egg-info/
 datasets/
+results/*
 
+
+results/BR-Modified-NSGA2_bi/BR*/**
+results/BR-Modified-NSGA2_bi/BR*/
+
+results/BR-Modified-NSGA2_tri/BR*/
+results/BR-Modified-NSGA2_tri/BR*/**
 
 results/BR-Original1/BR*/
 results/BR-Original1/BR*/**

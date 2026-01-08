@@ -120,8 +120,8 @@
     100
   ],
   "dataset_family": "BR-Modified-NSGA2_bi",
-  "elapsed_sec_total": 4.765455,
+  "elapsed_sec_total": 3384.187436,
   "modes": [
-    "C1_respect"
+    "six_way"
   ]
 }

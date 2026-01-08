@@ -20,8 +20,8 @@ WD_DIR = [
 
 
 BASE_ROOT = Path(r"C:\Users\elahi\Desktop\clp\clp\results")
-RESULTS_ROOT = BASE_ROOT / WD_DIR[3]
-OUT_FILE_NAME = WD_DIR[3]
+RESULTS_ROOT = BASE_ROOT / WD_DIR[4]
+OUT_FILE_NAME = WD_DIR[4]
 OUT_DIR = RESULTS_ROOT   / "_summary" #/ WD_DIR[3]
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
