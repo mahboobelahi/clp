@@ -19,7 +19,7 @@ from clp.clp.ga.population import init_population_groups, build_groups, expand_c
 from clp.clp.ga.nsga2 import run_nsga2_type1
 from clp.configurations import(is_ULO, RESULTS_DIR_NAME, DECODER_KIND, BOX_ORDER_POLICY,
                                 SPLIT_RATIO, SUPPORT_REQUIRED, SUPPORT_MIN_RATIO,
-                                GA_TEST, GA_EVOLVE, POP_SIZE, GENERATIONS,
+                                GA_TEST, GA_EVOLVE, POP_SIZE, GENERATIONS, BR_DATA,
                                 ENABLE_TEST_CLASS, ENABLE_TEST_CASE,SOFT_ROTATION,
                                 ROTATION_MODE_SETTING, GA_PARAM_TUNE,ga_grid)
 
@@ -388,11 +388,11 @@ def run_one_instance(
 def main() -> None:
     container = Dims(589, 233, 220)
 
-    BR_DATA = ["br_original", "br_modified_beta_2_2", "br_modified_beta_2_5",
-               "br_modified_beta_5_2", "br_modified_cust_beta_2_2", "br_modified_cust_beta_2_5",
-               "br_modified_cust_beta_5_2"]
+    # BR_DATA = ["br_original", "br_modified_beta_2_2", "br_modified_beta_2_5",
+    #            "br_modified_beta_5_2", "br_modified_cust_beta_2_2", "br_modified_cust_beta_2_5",
+    #            "br_modified_cust_beta_5_2"]
     
-    dataset_root = Path(f"clp/datasets/{BR_DATA[2]}")
+    dataset_root = Path(f"clp/datasets/{BR_DATA[-1]}")
 
     results_root = BASE_RESULTS / RESULTS_DIR_NAME
     results_root.mkdir(parents=True, exist_ok=True)
@@ -484,11 +484,11 @@ def main() -> None:
     # ============================================================
     overall_t0 = perf_counter()
 
-    for br_class in br_classes:
+    for br_class in reversed( br_classes):
         if br_class in ["BR0"]:
             continue
         class_t0 = perf_counter()
-
+        print(f"🚚 Running class {br_class}...")
         for mode_name, mode in modes:
             for case_id in case_ids:
                 run = run_one_instance(

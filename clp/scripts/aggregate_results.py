@@ -8,17 +8,16 @@ from statistics import mean, median, stdev
 import traceback
 from typing import Any, Dict, List, Optional, Tuple
 from openpyxl import Workbook
-
+# from clp.configurations import WD_DIR
 # ---- CONFIG ----
 # RESULTS_ROOT = Path(r"C:\Users\elahi\Desktop\clp\clp\results\BR-Original")
 WD_DIR = [
     "BR-Original-baseline",
-    "BR-Original",
     "BR-Original-two_phase",
     "BR-Modified-NSGA2_bi",
     "BR-Modified-NSGA2_tri",
+    "BR-Modified-NSGA2_tri_cust_beta_5_2",
 ]
-
 
 BASE_ROOT = Path(r"C:\Users\elahi\Desktop\clp\clp\results")
 RESULTS_ROOT = BASE_ROOT / WD_DIR[4]

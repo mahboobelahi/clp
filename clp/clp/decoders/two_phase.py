@@ -516,7 +516,7 @@ def decode_two_phase(
                         dims = rots[int(pref) % len(rots)]
                 print(
                     f"  {i:03d} type={inst.type_id} inst={inst.instance_id} "
-                    f"rot_pref={pref} dims=({dims.L},{dims.W},{dims.H})"
+                    f"rot_pref={pref} rot_dims=({dims.L},{dims.W},{dims.H} base_dim=({base.L},{base.W},{base.H})"
                 )
 
     # Backward compatibility:

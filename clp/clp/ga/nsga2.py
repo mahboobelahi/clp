@@ -303,13 +303,18 @@ def evaluate_chromosome(
     is_supported_fn,
     soft_rotation: bool,
 ) -> EvalRec:
-    order = expand_chromosome(
+    inst_ordered = expand_chromosome(
         chrom,
         groups,
+        instances=instances,
         rng=rng,
         shuffle_within_group=shuffle_within_group,
     )
-    inst_ordered = [instances[i] for i in order]
+
+    # If you still need order indices for logging, build them separately:
+    # order = [i.instance_id for i in inst_ordered]  # only if instance_id exists
+
+    # inst_ordered = [instances[i] for i in order]
 
     # Build mapping once (still better to do outside eval, but this works)
     type_to_pi: Dict[int, int] = {}

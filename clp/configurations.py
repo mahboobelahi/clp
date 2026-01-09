@@ -48,21 +48,28 @@ WD_DIR = [
     "BR-Original-two_phase",
     "BR-Modified-NSGA2_bi",
     "BR-Modified-NSGA2_tri",
-    "BR-Modified-NSGA2_tri_cust",
+    "BR-Modified-NSGA2_tri_cust_beta_5_2",
+    "BR-Modified-NSGA2_tri_cust_beta_2_2",
+    "BR-Modified-NSGA2_tri_cust_beta_2_5"
 ]
 
 RESULTS_DIR_NAME = WD_DIR[4]        # default: BR-Modified-NSGA2_bi
 
 ENABLE_TEST_CLASS = DEBUG_F[1]  
-ENABLE_TEST_CASE = DEBUG_F[1] 
-
+ENABLE_TEST_CASE = DEBUG_F[0] 
+# ============================================================
+# Dataset 
+# ============================================================
+BR_DATA = ["br_original", "br_modified_beta_2_2", "br_modified_beta_2_5",
+            "br_modified_beta_5_2", "br_modified_cust_beta_2_2", "br_modified_cust_beta_2_5",
+            "br_modified_cust_beta_5_2"]
 # ============================================================
 # Debug / Visualization
 # ============================================================
 PLOT_PARTIAL_LAYOUT = DEBUG_F[1] 
 PLOT_POP_EVALUATION = DEBUG_F[1] 
 
-debug = DEBUG_F[1]                        # verbose debug prints
+debug = DEBUG_F[0]                        # verbose debug prints
 
 # ============================================================
 # Speed/robustness caps (tune later)

@@ -2,7 +2,7 @@
 # clp/clp/ga/population.py
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Dict, List, Mapping, Sequence, Tuple, Optional, Hashable
 import random
 from types import MappingProxyType
@@ -65,31 +65,53 @@ def build_groups(
     return groups
 
 
+# def expand_chromosome(
+#     chrom: GroupChromosome,
+#     groups: Dict[GroupKey, List[int]],
+#     instances: Optional[Sequence] = None,
+#     rng: Optional[random.Random] = None,
+#     shuffle_within_group: bool = True,
+# ) -> List[int]:
+#     """
+#     Convert group chromosome to an item-level order (list of instance indices).
+#     Keeps groups contiguous, optionally shuffles within each group for diversity.
+#     If instances is provided, updates each instance.rotation_pref with the group's rot_map value.
+#     """
+#     order: List[int] = []
+#     for gk in chrom.group_seq:
+#         block = list(groups[gk])
+#         if shuffle_within_group and rng is not None and len(block) > 1:
+#             rng.shuffle(block)
+#         if instances is not None:
+#             rot_idx = chrom.rot_map[gk]
+#             for idx in block:
+#                 instances[idx].rotation_pref = rot_idx
+#         order.extend(block)
+#     return order
+
 def expand_chromosome(
     chrom: GroupChromosome,
     groups: Dict[GroupKey, List[int]],
-    instances: Optional[Sequence] = None,
+    instances: Sequence,
     rng: Optional[random.Random] = None,
     shuffle_within_group: bool = True,
-) -> List[int]:
+) -> List:
     """
-    Convert group chromosome to an item-level order (list of instance indices).
-    Keeps groups contiguous, optionally shuffles within each group for diversity.
-    If instances is provided, updates each instance.rotation_pref with the group's rot_map value.
+    Returns a NEW ordered list of ItemInstance with rotation_pref set.
+    Does not mutate original frozen dataclass instances.
     """
-    order: List[int] = []
+    inst_ordered: List = []
+
     for gk in chrom.group_seq:
         block = list(groups[gk])
         if shuffle_within_group and rng is not None and len(block) > 1:
             rng.shuffle(block)
-        if instances is not None:
-            rot_idx = chrom.rot_map[gk]
-            for idx in block:
-                instances[idx].rotation_pref = rot_idx
-        order.extend(block)
-    return order
 
+        rot_idx = int(chrom.rot_map[gk])
+        for idx in block:
+            inst_ordered.append(replace(instances[idx], rotation_pref=rot_idx))
 
+    return inst_ordered
 
 
 def init_population_groups(
