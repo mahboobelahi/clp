@@ -22,7 +22,7 @@ DECODER_KIND = DECODERS[1]          # "baseline" | "two_phase"
 DEBUG_F = [True,False]
 # e.g. "volume_then_maxface" (non-GA only)
 BOX_ORDER_POLICY = POLICIES[1]
-SPLIT_RATIO = 0.80
+SPLIT_RATIO = 0.60
 
 SUPPORT_REQUIRED = True
 SUPPORT_MIN_RATIO = 0.80
@@ -56,7 +56,7 @@ WD_DIR = [
 RESULTS_DIR_NAME = WD_DIR[4]        # default: BR-Modified-NSGA2_bi
 
 ENABLE_TEST_CLASS = DEBUG_F[1]  
-ENABLE_TEST_CASE = DEBUG_F[0] 
+ENABLE_TEST_CASE = DEBUG_F[1] 
 # ============================================================
 # Dataset 
 # ============================================================
@@ -69,7 +69,7 @@ BR_DATA = ["br_original", "br_modified_beta_2_2", "br_modified_beta_2_5",
 PLOT_PARTIAL_LAYOUT = DEBUG_F[1] 
 PLOT_POP_EVALUATION = DEBUG_F[1] 
 
-debug = DEBUG_F[0]                        # verbose debug prints
+debug = DEBUG_F[1]                        # verbose debug prints
 
 # ============================================================
 # Speed/robustness caps (tune later)

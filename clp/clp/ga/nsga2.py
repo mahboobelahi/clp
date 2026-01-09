@@ -303,7 +303,7 @@ def evaluate_chromosome(
     is_supported_fn,
     soft_rotation: bool,
 ) -> EvalRec:
-    inst_ordered = expand_chromosome(
+    order, inst_ordered = expand_chromosome(
         chrom,
         groups,
         instances=instances,

@@ -89,17 +89,18 @@ def build_groups(
 #         order.extend(block)
 #     return order
 
+from dataclasses import replace
+from typing import Dict, List, Optional, Sequence, Tuple
+import random
+
 def expand_chromosome(
     chrom: GroupChromosome,
     groups: Dict[GroupKey, List[int]],
     instances: Sequence,
     rng: Optional[random.Random] = None,
     shuffle_within_group: bool = True,
-) -> List:
-    """
-    Returns a NEW ordered list of ItemInstance with rotation_pref set.
-    Does not mutate original frozen dataclass instances.
-    """
+) -> Tuple[List[int], List]:
+    order: List[int] = []
     inst_ordered: List = []
 
     for gk in chrom.group_seq:
@@ -109,9 +110,11 @@ def expand_chromosome(
 
         rot_idx = int(chrom.rot_map[gk])
         for idx in block:
+            order.append(idx)
             inst_ordered.append(replace(instances[idx], rotation_pref=rot_idx))
 
-    return inst_ordered
+    return order, inst_ordered
+
 
 
 def init_population_groups(
