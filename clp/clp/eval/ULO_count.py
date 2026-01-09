@@ -38,7 +38,7 @@ def _above(i: ULOBox, k: ULOBox) -> bool:
 
 def _is_ulo(i: ULOBox, k: ULOBox) -> bool:
     # Only count unloading obstacles: i must be earlier than k
-    if not (i.pi > k.pi):
+    if not (i.pi < k.pi):
         return False
 
     front_block = _in_front_from_door_xL(i, k) and _overlap_yz(i, k)
